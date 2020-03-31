@@ -1,0 +1,26 @@
+---
+- name: "[SNOW] - Query a Change Task number (this fails)"
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  #vars_files:
+  #  - vars/snow_vars.yml
+  vars:
+    snow_chgtask: CTASK0010001
+
+  tasks:
+  - name: "[SNOW] Get change task with CTASK number (typically not unique)"
+    snow_record:
+      username: "{{ lookup('env','SN_USERNAME') }}"
+      password: "{{ lookup('env','SN_PASSWORD') }}"
+      instance: "{{ lookup('env','SN_INSTANCE') }}"
+      number: "{{ snow_chgtask }}"
+      table: change_task
+      state: present
+      data:
+        limit: 1
+    register: chgtask
+
+  - name: debug - chgtask data
+    debug:
+      var: chgtask

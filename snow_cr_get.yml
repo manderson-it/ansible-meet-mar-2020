@@ -1,0 +1,30 @@
+---
+- name: "[SNOW] - Query a Change Request"
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    snow_cr: "CHG0030001"
+  
+  tasks:
+  - name: Sanity Check
+    assert:
+      that:
+      - snow_cr is defined
+      - snow_cr | length == 10
+      fail_msg: "snow_cr undefined or not 10 chars long"
+      success_msg: "All required variables are defined"
+      
+  - name: "[SNOW] - Query a Change Request (Ansible >= 2.5)"
+    snow_record:
+      username: "{{ lookup('env','SN_USERNAME') }}"
+      password: "{{ lookup('env','SN_PASSWORD') }}"
+      instance: "{{ lookup('env','SN_INSTANCE') }}"
+      number: "{{ snow_cr | default('CHG0030001', true)}}"
+      state: present
+      table: change_request
+    register: r_cr
+
+  - name: "[SNOW] - DEBUG CR"
+    debug:
+      var: r_cr.record.short_description

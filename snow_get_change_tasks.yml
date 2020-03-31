@@ -1,0 +1,28 @@
+---
+- name: "[SNOW] - Find multiple records (Ansible >= 2.9)"
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  #vars_files:
+  #  - vars/snow_vars.yml
+  vars:
+    snow_chgtask: CTASK0010001
+
+  tasks:
+  - name: "[SNOW] - Get existing change task by CTASK number (typically not unique)"
+    snow_record_find:
+      username: "{{ lookup('env','SN_USERNAME') }}"
+      password: "{{ lookup('env','SN_PASSWORD') }}"
+      instance: "{{ lookup('env','SN_INSTANCE') }}"
+      table: change_task
+      query:
+        number: "{{ snow_chgtask }}"
+      return_fields:
+      - number
+      - sys_id
+      - short_description
+    register: chgtask
+
+  - name: debug - chgtask data
+    debug:
+      var: chgtask.record

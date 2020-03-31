@@ -1,0 +1,21 @@
+---
+- name: "[SNOW] - email to add to Change Request work_notes"
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+    # snow_ref: "Ref:MSG0000012_111fL1liW11H1bIWUcPT"
+    snow_ref: ""
+  
+  tasks:
+  - name: "[SNOW] - email to work_notes"
+    mail:
+      host: "{{ lookup('env','MAIL_HOST') }}"
+      username: "{{ lookup('env','MAIL_USERNAME') }}"
+      password: "{{ lookup('env','MAIL_PASSWORD') }}"
+      port: 587
+      from: "<your_sender_email_address@yourdomain.ca>"
+      #to: "dev100000@servicenowdevelopers.com" # Example for developer instance
+      to: "<yourSNOWinstance@servicenowdevelopers.com>"
+      subject: "Re: {{ snow_cr | default('CHG0030001', true) }}"
+      body: "Hey, I am Ansible. {{ snow_ref | default('', true) }}"
